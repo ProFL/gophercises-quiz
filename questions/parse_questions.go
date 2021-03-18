@@ -15,34 +15,34 @@ func ReadAndParseQuestions(filePath string, shuffleQuestions bool) []QuestionAns
 		log.Panic("There was an error openning the questions file", err.Error())
 	}
 	defer func() {
-		close_err := file.Close()
-		if close_err != nil {
-			log.Println("Failed to close the questions file", close_err.Error())
+		closeErr := file.Close()
+		if closeErr != nil {
+			log.Println("Failed to close the questions file", closeErr.Error())
 		}
 	}()
-	question_answers := parseQuestionsFromFile(file)
+	questionAnswers := parseQuestionsFromFile(file)
 	if shuffleQuestions {
 		rand.Seed(time.Now().UnixNano())
-		rand.Shuffle(len(question_answers), func(i, j int) {
-			question_answers[i], question_answers[j] = question_answers[j], question_answers[i]
+		rand.Shuffle(len(questionAnswers), func(i, j int) {
+			questionAnswers[i], questionAnswers[j] = questionAnswers[j], questionAnswers[i]
 		})
 	}
-	return question_answers
+	return questionAnswers
 }
 
 func parseQuestionsFromFile(file *os.File) []QuestionAnswer {
 	reader := csv.NewReader(file)
 	line, err := reader.Read()
-	var question_answers []QuestionAnswer
+	var questionAnswers []QuestionAnswer
 	for line != nil {
 		if err != nil {
 			log.Panic("Failed to parse the questions file", err.Error())
 		}
-		question_answers = append(question_answers, QuestionAnswer{
+		questionAnswers = append(questionAnswers, QuestionAnswer{
 			question: line[0],
 			answer:   strings.TrimSpace(line[1]),
 		})
 		line, err = reader.Read()
 	}
-	return question_answers
+	return questionAnswers
 }

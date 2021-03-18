@@ -2,6 +2,7 @@ package questions
 
 import (
 	"fmt"
+	"log"
 	"strings"
 )
 
@@ -11,8 +12,12 @@ type QuestionAnswer struct {
 }
 
 func (m *QuestionAnswer) AskQuestion() bool {
-	var user_answer string
+	var userAnswer string
 	fmt.Printf("%s\n: ", m.question)
-	fmt.Scanln(&user_answer)
-	return strings.EqualFold(m.answer, strings.TrimSpace(user_answer))
+	_, err := fmt.Scanln(&userAnswer)
+	if err != nil {
+		log.Println(err.Error())
+		log.Printf("Failed to read the answer for the question \"%s\"\n", m.question)
+	}
+	return strings.EqualFold(m.answer, strings.TrimSpace(userAnswer))
 }

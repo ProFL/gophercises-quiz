@@ -22,31 +22,31 @@ func init() {
 }
 
 func main() {
-	question_answers := questions.ReadAndParseQuestions(questionsFilePath, shuffleQuestions)
+	questionAnswers := questions.ReadAndParseQuestions(questionsFilePath, shuffleQuestions)
 
-	correct_answer_count := 0
-	question_count := len(question_answers)
+	correctAnswerCount := 0
+	questionCount := len(questionAnswers)
 
 	timer := time.AfterFunc(
 		time.Duration(answerTimeoutSeconds)*time.Second,
 		func() {
-			exit(question_count, correct_answer_count, 1)
+			exit(questionCount, correctAnswerCount, 1)
 		},
 	)
 
-	for i := 0; i < question_count; i++ {
+	for i := 0; i < questionCount; i++ {
 		fmt.Printf("%d) ", i+1)
-		if question_answers[i].AskQuestion() {
-			correct_answer_count += 1
+		if questionAnswers[i].AskQuestion() {
+			correctAnswerCount += 1
 		}
 	}
 
 	timer.Stop()
-	exit(question_count, correct_answer_count, 0)
+	exit(questionCount, correctAnswerCount, 0)
 }
 
-func exit(questions_count int, correct_count int, exitCode int) {
+func exit(questionsCount int, correctCount int, exitCode int) {
 	fmt.Println()
-	fmt.Println("You got", correct_count, "out of", questions_count, "right")
+	fmt.Println("You got", correctCount, "out of", questionsCount, "right")
 	os.Exit(exitCode)
 }
