@@ -27,17 +27,22 @@ func main() {
 	correctAnswerCount := 0
 	questionCount := len(questionAnswers)
 
-	timer := time.AfterFunc(
-		time.Duration(answerTimeoutSeconds)*time.Second,
-		func() {
-			exit(questionCount, correctAnswerCount, 1)
-		},
-	)
+	timer := time.NewTimer(time.Duration(answerTimeoutSeconds) * time.Second)
 
 	for i := 0; i < questionCount; i++ {
-		fmt.Printf("%d) ", i+1)
-		if questionAnswers[i].AskQuestion() {
-			correctAnswerCount += 1
+		answerChannel := make(chan bool)
+		go func() {
+			fmt.Printf("%d) ", i+1)
+			answerChannel <- questionAnswers[i].AskQuestion()
+		}()
+
+		select {
+		case <-timer.C:
+			exit(questionCount, correctAnswerCount, 1)
+		case isAnswerCorrect := <-answerChannel:
+			if isAnswerCorrect {
+				correctAnswerCount += 1
+			}
 		}
 	}
 
